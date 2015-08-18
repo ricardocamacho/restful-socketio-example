@@ -1,0 +1,227 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 9.4.1
+-- Dumped by pg_dump version 9.4.1
+-- Started on 2015-08-18 01:40:06
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SET check_function_bodies = false;
+SET client_min_messages = warning;
+
+--
+-- TOC entry 176 (class 3079 OID 11855)
+-- Name: plpgsql; Type: EXTENSION; Schema: -; Owner: 
+--
+
+CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
+
+
+--
+-- TOC entry 2014 (class 0 OID 0)
+-- Dependencies: 176
+-- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
+
+
+SET search_path = public, pg_catalog;
+
+SET default_tablespace = '';
+
+SET default_with_oids = false;
+
+--
+-- TOC entry 175 (class 1259 OID 24811)
+-- Name: posts; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE posts (
+    id integer NOT NULL,
+    body character varying(150),
+    user_id integer,
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE posts OWNER TO postgres;
+
+--
+-- TOC entry 174 (class 1259 OID 24809)
+-- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE posts_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE posts_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2015 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE posts_id_seq OWNED BY posts.id;
+
+
+--
+-- TOC entry 173 (class 1259 OID 24803)
+-- Name: users; Type: TABLE; Schema: public; Owner: postgres; Tablespace: 
+--
+
+CREATE TABLE users (
+    id integer NOT NULL,
+    fullname character varying(150),
+    username character varying(100),
+    password character varying(32),
+    created_at timestamp without time zone,
+    updated_at timestamp without time zone
+);
+
+
+ALTER TABLE users OWNER TO postgres;
+
+--
+-- TOC entry 172 (class 1259 OID 24801)
+-- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: postgres
+--
+
+CREATE SEQUENCE users_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE users_id_seq OWNER TO postgres;
+
+--
+-- TOC entry 2016 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: postgres
+--
+
+ALTER SEQUENCE users_id_seq OWNED BY users.id;
+
+
+--
+-- TOC entry 1888 (class 2604 OID 24814)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY posts ALTER COLUMN id SET DEFAULT nextval('posts_id_seq'::regclass);
+
+
+--
+-- TOC entry 1887 (class 2604 OID 24806)
+-- Name: id; Type: DEFAULT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY users ALTER COLUMN id SET DEFAULT nextval('users_id_seq'::regclass);
+
+
+--
+-- TOC entry 2006 (class 0 OID 24811)
+-- Dependencies: 175
+-- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY posts (id, body, user_id, created_at, updated_at) FROM stdin;
+26	My first message	1	2015-08-18 00:39:29.22	2015-08-18 00:39:29.22
+27	My second message	1	2015-08-18 00:39:37.03	2015-08-18 00:39:37.03
+28	My third message	1	2015-08-18 00:56:10.592	2015-08-18 00:56:10.592
+29	My fourth message	1	2015-08-18 00:58:58.812	2015-08-18 00:58:58.812
+30	My fifth message	1	2015-08-18 00:59:27.756	2015-08-18 00:59:27.756
+31	My sixth message	1	2015-08-18 00:59:57.116	2015-08-18 00:59:57.116
+32	My seventh message	1	2015-08-18 01:01:37.942	2015-08-18 01:01:37.942
+33	My eight message	1	2015-08-18 01:01:42.264	2015-08-18 01:01:42.264
+\.
+
+
+--
+-- TOC entry 2017 (class 0 OID 0)
+-- Dependencies: 174
+-- Name: posts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('posts_id_seq', 33, true);
+
+
+--
+-- TOC entry 2004 (class 0 OID 24803)
+-- Dependencies: 173
+-- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+COPY users (id, fullname, username, password, created_at, updated_at) FROM stdin;
+1	Ricardo Camacho	ricardocamacho21	e10adc3949ba59abbe56e057f20f883e	2015-08-14 22:54:27.747	2015-08-14 22:54:27.747
+\.
+
+
+--
+-- TOC entry 2018 (class 0 OID 0)
+-- Dependencies: 172
+-- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: postgres
+--
+
+SELECT pg_catalog.setval('users_id_seq', 1, true);
+
+
+--
+-- TOC entry 1892 (class 2606 OID 24816)
+-- Name: posts_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1890 (class 2606 OID 24808)
+-- Name: users_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres; Tablespace: 
+--
+
+ALTER TABLE ONLY users
+    ADD CONSTRAINT users_pkey PRIMARY KEY (id);
+
+
+--
+-- TOC entry 1893 (class 2606 OID 24817)
+-- Name: posts_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY posts
+    ADD CONSTRAINT posts_user_id_fkey FOREIGN KEY (user_id) REFERENCES users(id);
+
+
+--
+-- TOC entry 2013 (class 0 OID 0)
+-- Dependencies: 5
+-- Name: public; Type: ACL; Schema: -; Owner: postgres
+--
+
+REVOKE ALL ON SCHEMA public FROM PUBLIC;
+REVOKE ALL ON SCHEMA public FROM postgres;
+GRANT ALL ON SCHEMA public TO postgres;
+GRANT ALL ON SCHEMA public TO PUBLIC;
+
+
+-- Completed on 2015-08-18 01:40:06
+
+--
+-- PostgreSQL database dump complete
+--
+
