@@ -18,10 +18,12 @@ app.config(function($routeProvider) {
 	}
 );
 
-app.run(function($rootScope, $location, $window) {
+app.run(function($rootScope, $location, $window, $http) {
 	$rootScope.$on('$routeChangeStart', function(event, next, current) {
 		if(!$window.localStorage['token']){
 			$location.path('/login');
+		}else{
+			$http.defaults.headers.common.Authorization = 'Bearer ' + $window.localStorage.token;
 		}
 	});
 });
@@ -50,7 +52,7 @@ app.factory('socket', function ($rootScope) {
   };
 });
 
-app.controller('SessionCtrl', function($http, $window, $location, $q){
+app.controller('SessionCtrl', function($http, $window, $location){
 	var url = baseUrl+'/api/users/session';
 	var thisCtrl = this;
 	this.login = function(){
@@ -66,19 +68,32 @@ app.controller('SessionCtrl', function($http, $window, $location, $q){
 	};
 });
 
-app.controller('PostsCtrl', function($scope, $http, $window, socket){
-	if($window.localStorage.token){
-		$http.defaults.headers.common.Authorization = 'Bearer ' + $window.localStorage.token;
-	}
+app.controller('PostsCtrl', function($interval, $scope, $http, $window, $location, socket){
+	var interval = $interval(function(){
+		$http.post(baseUrl+'/api/users/session/refresh').success(function(res){
+			if(res.data.token){
+				$window.localStorage['token'] = res.data.token;
+				$http.defaults.headers.common.Authorization = 'Bearer ' + $window.localStorage.token;
+			}
+		});
+	}, 300000);
+	this.logout = function(){
+		$http.defaults.headers.common.Authorization = undefined;
+		$window.localStorage['token'] = undefined;
+		$location.path('/login');
+	};
 	var url = baseUrl+'/api/posts';
 	var thisCtrl = this;
 	$http.get(url).success(function(res){
 		thisCtrl.posts = res.data.posts;
+	}).error(function(){
+		$location.path('/login');
 	});
   thisCtrl.send = function(){
-    $http.post(url,{ body: thisCtrl.msg }).then(function(res){
+    $http.post(url,{ body: thisCtrl.msg }).success(function(res){
       thisCtrl.msg = '';
-    }, function(res){
+    }).error(function(){
+			$location.path('/login');
 		});
     //socket.emit('chat message', thisCtrl.msg);
   };

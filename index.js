@@ -46,7 +46,7 @@ router.post('/users/session', function(req, res){
 		data.password = crypto.createHash('md5').update(data.password).digest('hex');
 		User.findOne({ where: { username: data.username, password: data.password } }).then(function(user) {
 			if(user){
-				var token = jwt.sign({ user_id: user.id, username: data.username }, 'secret', {expiresInMinutes: 1});
+				var token = jwt.sign({ user_id: user.id, username: data.username }, 'secret', {expiresInMinutes: 10});
 				return res.status(200).send({ success: true, data: { token: token } });
 			}else{
 				return res.status(401).send({ success: false, message: 'Invalid username or password' });
@@ -54,6 +54,22 @@ router.post('/users/session', function(req, res){
 		});
 	}else{
 		return res.status(400).send({ success: false, message: 'Missing parameters' });
+	}
+});
+
+router.post('/users/session/refresh', function(req, res){
+	var authHeader = req.headers['authorization'];
+	if(authHeader){
+		try{
+			var authorization = authHeader.split(' ');
+			req.decoded = jwt.verify(authorization[1], 'secret');
+			var token = jwt.sign({ user_id: req.decoded.user_id, username: req.decoded.username }, 'secret', {expiresInMinutes: 1});
+			return res.status(200).send({ success: true, data: { token: token } });
+		}catch(err){
+			return res.status(200).send({ success: false, message: 'Invalid Token' });
+		}
+	}else{
+		return res.status(400).send({ success: false, message: 'No token provided' });
 	}
 });
 
